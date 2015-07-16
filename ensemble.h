@@ -37,7 +37,8 @@ public:
         for (++m; m <= M_; ++m) {
             for (size_t i = 0; i < N; ++i) {
                 double label = s[i][n];
-                double residual = label - predict(s[i], n);
+				double prediction = predict(s[i], n);
+                double residual = label - prediction;
                 s[i].push_back(residual);
             }
             print_samples(std::cout, s);
