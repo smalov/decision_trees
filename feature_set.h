@@ -3,65 +3,54 @@
 #include <vector>
 #include <memory>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <string>
-#include "sample.h"
 
+typedef std::vector<double*> feature_data;
+
+void print_data(std::ostream& os, const feature_data& data, size_t n);
+void delete_data(feature_data& data);
+
+// feature_set -> feature_vector -> features, labels
+// feature names
+// bagging
+// mixed numerical and categorical features 
 class feature_set {
-    size_t n_;
-    samples data_;
+    size_t n_; // feature count and index of label
+	feature_data data_;
 public:
-    feature_set(samples& s, size_t n) {
-        n_ = n;
-        data_.swap(s);
+	feature_set() : n_(0) {}
+	~feature_set() {
+		delete_data(data_);
+	}
+	void initialize(feature_data& data, size_t n) {
+        n_ = n - 1;
+        data_.swap(data);
     }
-    void print(std::ostream& os) const {
-        print_samples(os, data_);
-    }
-    const samples& get_samples() const {
-        return data_;
-    }
-    void get_feature_names() const {
+	size_t size() const {
+		return data_.size();
+	}
+	const double** begin() const {
+		return (const double**)&data_[0];
+	}
+	const double** end() const {
+		return begin() + data_.size();
+	}
+    void features() const {
         // not implemented
+		// feature name, type, etc
     }
     // index of label is equal to feature count
-    const size_t get_feature_count() const {
+    const size_t feature_count() const {
         return n_;
     }
+	void copy(feature_data& other) const {
+		// not implemented
+	}
+	void print(std::ostream& os) const {
+		print_data(os, data_, n_);
+	}
 };
 
-typedef std::shared_ptr<feature_set> feature_set_ptr;
-
-feature_set_ptr load_features(const char* file_name)
-{
-	std::ifstream f(file_name);
-	std::string line;
-    // read header
-    if (!std::getline(f, line))
-        throw std::exception("empty file");
-    size_t n = 0; // number of columns
-    size_t first = 0, last = 0;
-    for (; last != std::string::npos;) {
-        last = line.find('\t', first);
-        first = last + 1;
-        ++n;
-    }
-    // read values
-    samples s;
-	while (std::getline(f, line)) {
-        s.push_back(sample(n));
-        first = 0, last = 0;
-        size_t i = 0;
-        while (i < n) {
-			last = line.find('\t', first);
-            double val = strtod(line.c_str() + first, nullptr);
-            s.back()[i++] = val;
-            if (last == std::string::npos)
-                break;
-			first = last + 1;
-		}
-        if (i != n)
-            throw std::exception("invalid number of values");
-	}
-	return feature_set_ptr(new feature_set(s, n - 1));
-}
+void load_feature_set(feature_set& fs, const char* file_name);

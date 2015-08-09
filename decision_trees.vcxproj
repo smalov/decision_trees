@@ -77,14 +77,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="feature_set.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="boosting.h" />
     <ClInclude Include="classification_tree.h" />
+    <ClInclude Include="decision_stump.h" />
     <ClInclude Include="ensemble.h" />
     <ClInclude Include="feature_set.h" />
+    <ClInclude Include="math.h" />
+    <ClInclude Include="training_set.h" />
+    <ClInclude Include="tree_learning.h" />
+    <ClInclude Include="pruning.h" />
     <ClInclude Include="regression_tree.h" />
-    <ClInclude Include="sample.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="training_set.txt" />

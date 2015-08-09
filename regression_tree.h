@@ -6,10 +6,19 @@
 #include <limits>
 #include <iomanip>
 #include "feature_set.h"
+#include "math.h"
+#include "tree_learning.h"
 
+// todo:
+// - different splitting criteria 
+// - use stopping criteria
+// - implement pruning 
+// - add parameters/members:
+//     num_leaves - maximum number of leaves in tree
+//     min_docs_in_leaf - minimum number of documents in leaf
+//     width - ...
 class regression_tree {
 public:
-    //regression_tree(size_t num_leaves = 2) : num_leaves_(num_leaves) {}
     regression_tree()
         : feature_index_(0), split_value_(0.0), lte_value_(0.0), gt_value_(0.0) {}
     regression_tree(size_t feature_index, double split_value, double lte_value, double gt_value)
@@ -22,7 +31,7 @@ public:
         return x[feature_index_] <= split_value_ ? lte_value_ : gt_value_;
     }
     void print(std::ostream& os) {
-        std::cout << "regression tree:\n\tfeature: " << feature_index_ << "\n\tsplit: "
+        os << "regression tree:\n\tfeature: " << feature_index_ << "\n\tsplit: "
             << split_value_ << "\n\tlte: " << lte_value_ << "\n\tgt: " << gt_value_ << std::endl;
     }
 private:
@@ -35,10 +44,10 @@ private:
 
 typedef std::shared_ptr<regression_tree> regression_tree_ptr;
 
-struct sample_less {
+struct feature_less {
     size_t i_; // index of feature
-    sample_less(size_t i) : i_(i) {}
-    bool operator()(const sample& left, const sample& right) const {
+	feature_less(size_t i) : i_(i) {}
+	bool operator()(const feature_vector& left, const feature_vector& right) const {
         return left[i_] < right[i_];
     }
 };
@@ -53,72 +62,6 @@ void print_split(std::ostream& os, const samples& values, size_t label, size_t s
     std::cout << std::endl;
 }
 
-double sum(samples::const_iterator first, samples::const_iterator last, size_t i) {
-    double sum = 0.0;
-    for (samples::const_iterator it = first; it != last; ++it)
-        sum += (*it)[i];
-    return sum;
-}
-
-double mean(samples::const_iterator first, samples::const_iterator last, size_t i) {
-    return sum(first, last, i) / std::distance(first, last);
-}
-
-// no division by number of samples
-// sum((y - F)^2)
-double squared_error(samples::const_iterator first, samples::const_iterator last, double mean, size_t label_index) {
-    double err = 0.0;
-    for (samples::const_iterator it = first; it != last; ++it) {
-        double diff = (*it)[label_index] - mean;
-        err += diff * diff;
-    }
-    return err;
-}
-
-double mean_squared_error(samples::const_iterator first, samples::const_iterator middle, samples::const_iterator last, size_t i) {
-    double mean1 = mean(first, middle, i), mean2 = mean(middle, last, i);
-    double err1 = squared_error(first, middle, mean1, i), err2 = squared_error(middle, last, mean2, i);
-    return (err1 + err2) / std::distance(first, last);
-}
-
-struct split_result {
-    double value_;
-    size_t feature_index_; // index of feature
-    size_t sample_index_; // index of sample 
-    split_result(double value, size_t feature_index, size_t sample_index)
-        : value_(value), feature_index_(feature_index), sample_index_(sample_index) {}
-};
-
-// n - feature count
-// l - index of label
-// returns pair of index of feature and index of sample
-split_result split(samples::iterator first, samples::iterator last, size_t n, size_t l) {
-    if (first == last)
-        throw std::exception();
-    split_result res(0.0, 0, 0);
-    double min_err = std::numeric_limits<double>::max();
-    for (size_t i = 0; i < n; ++i) {
-        std::sort(first, last, sample_less(i));
-        samples::iterator it = first;
-        double prev = (*it)[i];
-        ++it;
-        while (true) {
-            while (it != last && (*it)[i] == prev)
-                ++it;
-            double err = mean_squared_error(first, it, last, l);
-            if (min_err > err) {
-                min_err = err;
-                size_t j = it - first;
-                res = split_result(prev, i, j);
-            }
-            if (it == last)
-                break;
-            prev = (*it)[i];
-            ++it;
-        }
-    }
-    return res;
-}
 
 //void assign_diff(samples::iterator first, samples::iterator last, size_t n) {
 //    double m = mean(first, last, n);
@@ -135,7 +78,7 @@ split_result split(samples::iterator first, samples::iterator last, size_t n, si
 // samples is sorted after returning from the function
 regression_tree* learn_tree(samples& s, size_t n, size_t l) {
     split_result res = split(s.begin(), s.end(), n, l);
-    std::sort(s.begin(), s.end(), sample_less(res.feature_index_));
+	std::sort(s.begin(), s.end(), feature_vector_less(res.feature_index_));
     print_split(std::cout, s, l, res.feature_index_, res.sample_index_);
 
     if (res.sample_index_ == 0)
