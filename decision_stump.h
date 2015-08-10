@@ -44,6 +44,10 @@ public:
 			<< "\n\tgt: " << gt_
 			<< std::endl;
 	}
+	size_t feature() const { return feature_; }
+	double val() const { return split_; }
+	double lte() const { return lte_; }
+	double gt() const { return gt_; }
 private:
 	size_t feature_;
 	double split_; // the top split

@@ -59,7 +59,8 @@ public:
             trees_[i]->print(os);
         os << "END OF ENSEMBLE" << std::endl;
     }
-
+	size_t size() const { return trees_.size(); }
+	const tree_type& tree(size_t i) { return *trees_[i]; }
 private:
 	size_t iteration_count_;
     double learning_rate_;

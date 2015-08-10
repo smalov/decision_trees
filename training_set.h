@@ -4,10 +4,10 @@
 
 // feature_vector_less
 struct x_less {
-	size_t i_;
-	x_less(size_t i) : i_(i) {}
+	size_t j_;
+	x_less(size_t j) : j_(j) {}
 	bool operator()(const double* x1, const double* x2) const {
-		return x1[i_] < x2[i_];
+		return x1[j_] < x2[j_];
 	}
 };
 
@@ -51,11 +51,11 @@ public:
 	void set_gradient(size_t i, double val) {
 		data_[i][n_ + 1] = val;
 	}
-	void sort(size_t i) {
-		sort(0, size(), i);
+	void sort(size_t j) {
+		sort(0, size(), j);
 	}
-	void sort(size_t b, size_t e, size_t i) {
-		std::sort(data_.begin() + b, data_.begin() + e, x_less(i));
+	void sort(size_t i1, size_t i2, size_t j) {
+		std::sort(data_.begin() + i1, data_.begin() + i2, x_less(j));
 	}
 	const double** begin() const {
 		return (const double**)&data_[0];

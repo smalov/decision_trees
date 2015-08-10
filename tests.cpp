@@ -1,9 +1,14 @@
+#include <cassert>
 #include "tests.h"
 #include "feature_set.h"
 #include "regression_tree.h"
 #include "boosting.h"
 #include "ensemble.h"
 #include "decision_stump.h"
+
+bool equal(double d1, double d2) {
+	return abs(d1 - d2) < 0.001;
+}
 
 void run_tests(std::ostream& os) {
 	test_learning_of_regression_tree(os);
@@ -27,6 +32,18 @@ void test_learning_of_stump_ensemble(std::ostream& os) {
 	ensemble<decision_stump, gradient_boosting> e(5);
 	e.learn(fs, &os);
 	e.print(os);
+
+	assert(e.size() == 5);
+	const decision_stump& t0 = e.tree(0);
+	assert(t0.feature() == 1 && t0.val() == 1 && equal(t0.lte(), 0.522) && equal(t0.gt(), -0.145));
+	const decision_stump& t1 = e.tree(1);
+	assert(t1.feature() == 0 && t1.val() == 1 && equal(t1.lte(), 0.812) && equal(t1.gt(), 0.386));
+	const decision_stump& t2 = e.tree(2);
+	assert(t2.feature() == 1 && t2.val() == 7 && equal(t2.lte(), 0.0574) && equal(t2.gt(), -0.383));
+	const decision_stump& t3 = e.tree(3);
+	assert(t3.feature() == 1 && t3.val() == 4 && equal(t3.lte(), -0.147) && equal(t3.gt(), 0.16));
+	const decision_stump& t4 = e.tree(4);
+	assert(t4.feature() == 0 && t4.val() == 3 && equal(t4.lte(), 0.0911) && equal(t4.gt(), -0.0993));
 
 	// evaluation -> precision/recall for a validation set 
 	//std::unique_ptr<double[]> x(new double[n]);
