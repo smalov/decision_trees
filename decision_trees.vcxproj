@@ -79,6 +79,7 @@
   <ItemGroup>
     <ClCompile Include="feature_set.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="boosting.h" />
@@ -87,6 +88,7 @@
     <ClInclude Include="ensemble.h" />
     <ClInclude Include="feature_set.h" />
     <ClInclude Include="math.h" />
+    <ClInclude Include="tests.h" />
     <ClInclude Include="training_set.h" />
     <ClInclude Include="tree_learning.h" />
     <ClInclude Include="pruning.h" />

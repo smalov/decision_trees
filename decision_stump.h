@@ -9,42 +9,44 @@
 // also known as one-level tree, weak learner, etc
 class decision_stump {
 public:
-	decision_stump() : feature_index_(0), split_value_(0.0), lte_value_(0.0), gt_value_(0.0) {}
-	decision_stump(size_t feature_index, double split_value, double lte_value, double gt_value)
-		: feature_index_(feature_index), split_value_(split_value), lte_value_(lte_value), gt_value_(gt_value)
+	decision_stump() : feature_(0), split_(0.0), lte_(0.0), gt_(0.0) {}
+	decision_stump(size_t feature, double split_val, double lte_val, double gt_val)
+		: feature_(feature), split_(split_val), lte_(lte_val), gt_(gt_val)
 	{}
 	double predict(const double* x, size_t n) {
-		if (feature_index_ >= n)
+		if (feature_ >= n)
 			throw std::exception();
-		return x[feature_index_] <= split_value_ ? lte_value_ : gt_value_;
+		return x[feature_] <= split_ ? lte_ : gt_;
 	}
 	// l - label index
-	void learn(training_set& ts, size_t l) {
+	void learn(training_set& ts, size_t l, std::ostream* logger = NULL) {
 		size_t i = 0; // feature vector index
 		size_t j = 0; // feature index
 		if (!split(ts, l, i, j))
 			throw std::exception(); // return false;
 
 		ts.sort(j);
-		print_split(std::cout, ts, l, i, j);
+		if (logger)
+			print_split(*logger, ts, l, i, j);
 
+		feature_ = j;
+		split_ = ts.x(i - 1)[j];
 		const double** middle = ts.begin() + i;
-		feature_index_ = j;
-		split_value_ = ts.x(i - 1)[j];
-		lte_value_ = mean(ts.begin(), middle, l);
-		gt_value_ = mean(middle, ts.end(), l);
+		lte_ = mean(ts.begin(), middle, l);
+		gt_ = mean(middle, ts.end(), l);
 		// return true;
 	}
 	void print(std::ostream& os) {
 		os << "decision stump:"
-			<< "\n\tfeature: " << feature_index_
-			<< "\n\tsplit: " << split_value_
-			<< "\n\tlte: " << lte_value_
-			<< "\n\tgt: " << gt_value_ << std::endl;
+			<< "\n\tfeature: " << feature_
+			<< "\n\tsplit: " << split_
+			<< "\n\tlte: " << lte_
+			<< "\n\tgt: " << gt_
+			<< std::endl;
 	}
 private:
-	size_t feature_index_;
-	double split_value_; // the top split
-	double lte_value_; // lte child split
-	double gt_value_; // gt child split
+	size_t feature_;
+	double split_; // the top split
+	double lte_; // lte child split
+	double gt_; // gt child split
 };

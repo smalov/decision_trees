@@ -13,6 +13,8 @@ public:
     typedef std::shared_ptr<tree_type> tree_ptr;
 	typedef Boosting boosting_type;
 
+	// iteration count - max number of trees
+	// learing rate - not used, tbd
     explicit ensemble(size_t iteration_count, double learning_rate = 1.0)
 		: iteration_count_(iteration_count), learning_rate_(learning_rate)
 	{}
@@ -21,7 +23,7 @@ public:
     // f - input file
     void deserialize(const char*) {}
     //void add_tree(const tree_ptr& tree) {}
-    void learn(const feature_set& fs) {
+	void learn(const feature_set& fs, std::ostream* logger = NULL) {
         training_set ts(fs);
 		size_t n = ts.feature_count();
 		boosting_type boosting;
@@ -34,10 +36,12 @@ public:
 				double gradient = boosting.gradient(label, prediction); 
 				ts.set_gradient(i, gradient); 
             }
-            ts.print(std::cout);
+			if (logger)
+				ts.print(*logger);
 			tree_ptr t(new tree_type());
-			t->learn(ts, ts.gradient_index());
-			t->print(std::cout);
+			t->learn(ts, ts.gradient_index(), logger);
+			if (logger)
+				t->print(*logger);
             trees_.push_back(t);
         }
     }

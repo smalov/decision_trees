@@ -7,7 +7,7 @@
 // i - index of feature vector
 // j - index of feature
 // returns pair of index of feature and index of sample
-bool split(training_set& ts, size_t l, size_t& i, size_t& j) {
+inline bool split(training_set& ts, size_t l, size_t& i, size_t& j) {
 	double e_min = DBL_MAX;
 	for (size_t k = 0; k < ts.feature_count(); ++k) {
 		ts.sort(k);
@@ -19,7 +19,8 @@ bool split(training_set& ts, size_t l, size_t& i, size_t& j) {
 		while (true) {
 			while (it != last && (*it)[k] == prev)
 				++it; // skip equal values
-			double e = mean_squared_error(first, it, last, l);
+			double e = squared_error(first, it, l) + squared_error(it, last, l);
+			// note: mean_squared_error() does not work here
 			if (e_min > e) {
 				e_min = e;
 				i = it - first;
@@ -34,7 +35,7 @@ bool split(training_set& ts, size_t l, size_t& i, size_t& j) {
 	return true;
 }
 
-void print_split(std::ostream& os, const training_set& ts, size_t l, size_t i, size_t j) {
+inline void print_split(std::ostream& os, const training_set& ts, size_t l, size_t i, size_t j) {
 	os << "SPLIT(" << j << ")\n";
 	for (size_t k = 0; k < ts.size(); ++k) {
 		if (k == i)
