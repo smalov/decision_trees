@@ -45,9 +45,6 @@ public:
     const size_t feature_count() const {
         return n_;
     }
-	void copy(feature_data& other) const {
-		// not implemented
-	}
 	void print(std::ostream& os) const {
 		print_data(os, data_, n_);
 	}

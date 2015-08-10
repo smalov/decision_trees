@@ -29,14 +29,14 @@ public:
         double F0 = mean(ts.begin(), ts.end(), n); // mean value for all labels
         for (size_t m = 0; m < iteration_count_; ++m) {
             for (size_t i = 0; i < ts.size(); ++i) {
-                double label = ts.label(i);
-				double prediction = (m == 0 ? F0 : predict(ts.feature_vector(i), n));
-				double gradient = boosting.gradient(label, prediction); // label - prediction;
-				ts.set_label(i, gradient); // residual in case of gradient boosting
+                double label = ts.y(i);
+				double prediction = (m == 0 ? F0 : predict(ts.x(i), n));
+				double gradient = boosting.gradient(label, prediction); 
+				ts.set_gradient(i, gradient); 
             }
             ts.print(std::cout);
 			tree_ptr t(new tree_type());
-			t->learn(ts);
+			t->learn(ts, ts.gradient_index());
 			t->print(std::cout);
             trees_.push_back(t);
         }

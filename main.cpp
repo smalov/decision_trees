@@ -31,9 +31,9 @@ int main(int argc, char* argv[]) {
     e.learn(fs);
     e.print(std::cout);
 
-    // prediction
-    std::unique_ptr<double[]> x(new double[n]);
-    e.predict(x.get(), n);
+    // evaluation -> precision/recall for a validation set 
+    //std::unique_ptr<double[]> x(new double[n]);
+    //std::cout << e.predict(x.get(), n);
 	return 0;
 }
 

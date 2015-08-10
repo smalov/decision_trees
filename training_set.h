@@ -30,6 +30,9 @@ public:
 	size_t label_index() const {
 		return n_;
 	}
+	size_t gradient_index() const {
+		return n_ + 1;
+	}
 	const double* feature_vector(size_t i) const {
 		return data_[i];
 	}
@@ -39,11 +42,14 @@ public:
 	double label(size_t i) const {
 		return data_[i][n_];
 	}
+	double gradient(size_t i) const {
+		return data_[i][n_ + 1];
+	}
 	double y(size_t i) const { // alias for label(i)
 		return label(i);
 	}
-	void set_label(size_t i, double val) {
-		data_[i][n_] = val;
+	void set_gradient(size_t i, double val) {
+		data_[i][n_ + 1] = val;
 	}
 	void sort(size_t i) {
 		sort(0, size(), i);
@@ -60,7 +66,7 @@ public:
 	void print(std::ostream& os) const {
 		for (size_t i = 0; i < data_.size(); ++i) {
 			const double* x = data_[i];
-			for (size_t j = 0; j <= n_; ++j)
+			for (size_t j = 0; j <= (n_ + 1); ++j)
 				os << "\t" << data_[i][j];
 			os << std::endl;
 		}
@@ -70,8 +76,9 @@ private:
 		n_ = fs.feature_count();
 		data_.reserve(fs.size());
 		for (const double** it = fs.begin(); it != fs.end(); ++it) {
-			double* p = new double[n_ + 1];
-			memcpy(p, *it, (n_ + 1) * sizeof(double));
+			double* p = new double[n_ + 2]; // + 1 element for gradient 
+			memcpy(p, *it, (n_ + 1) * sizeof(double)); // copy x and y
+			p[n_ + 1] = 0.0; // gradient
 			data_.push_back(p);
 		}
 	}

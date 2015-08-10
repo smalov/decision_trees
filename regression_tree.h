@@ -16,7 +16,7 @@
 // - add parameters/members:
 //     num_leaves - maximum number of leaves in tree
 //     min_docs_in_leaf - minimum number of documents in leaf
-//     width - ...
+//     weight - ...
 class regression_tree {
 public:
     regression_tree()
