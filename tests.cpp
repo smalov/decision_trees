@@ -21,6 +21,9 @@ void test_learning_of_regression_tree(std::ostream& os) {
 	training_set ts(fs);
 	regression_tree t;
 	t.learn(ts, ts.label_index(), &os);
+
+	for (size_t i = 0; i < ts.size(); ++i)
+		assert(t.predict(ts.x(i), ts.feature_count()) == ts.y(i)); 
 }
 
 void test_learning_of_stump_ensemble(std::ostream& os) {

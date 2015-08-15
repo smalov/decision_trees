@@ -20,7 +20,7 @@ int main(int argc, char* argv[]) {
 		return 0;
 	}
 
-	//test_learning_of_regression_tree(std::cout);
+	test_learning_of_regression_tree(std::cout);
 	test_learning_of_stump_ensemble(std::cout);
 
 	return 0;
