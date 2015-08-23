@@ -51,3 +51,4 @@ public:
 };
 
 void load_feature_set(feature_set& fs, const char* file_name);
+void load_feature_set_for_classification(feature_set& fs, const char* file_name);

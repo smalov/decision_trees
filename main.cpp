@@ -20,8 +20,10 @@ int main(int argc, char* argv[]) {
 		return 0;
 	}
 
-	test_learning_of_regression_tree(std::cout);
-	test_learning_of_stump_ensemble(std::cout);
+	std::ostream& os = std::cout;
+	test_learning_of_classification_tree(os);
+	test_learning_of_regression_tree(os);
+	test_learning_of_stump_ensemble(os);
 
 	return 0;
 }

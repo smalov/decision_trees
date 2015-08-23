@@ -2,6 +2,7 @@
 #include "tests.h"
 #include "feature_set.h"
 #include "regression_tree.h"
+#include "classification_tree.h"
 #include "boosting.h"
 #include "ensemble.h"
 #include "decision_stump.h"
@@ -11,8 +12,23 @@ bool equal(double d1, double d2) {
 }
 
 void run_tests(std::ostream& os) {
-	test_learning_of_regression_tree(os);
-	test_learning_of_stump_ensemble(os);
+	//test_learning_of_regression_tree(os);
+	//test_learning_of_stump_ensemble(os);
+	test_learning_of_classification_tree(os);
+}
+
+void test_learning_of_classification_tree(std::ostream& os) {
+	feature_set fs;
+	load_feature_set_for_classification(fs, "training_set.txt");
+	fs.print(os);
+
+	ensemble<classification_tree, adaptive_boosting> e(5);
+	e.learn(fs, &os);
+	e.print(os);
+
+	//training_set ts(fs);
+	//classification_tree t;
+	//t.learn(ts, ts.label_index(), &os);
 }
 
 void test_learning_of_regression_tree(std::ostream& os) {

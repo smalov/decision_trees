@@ -47,7 +47,7 @@ public:
     }
     // x - features
     // n - feature count
-    double predict(const double* x, size_t n) {
+    double predict(const double* x, size_t n) const {
         double Fx = 0.0;
 		for (size_t i = 0; i < trees_.size(); ++i)
 			Fx += trees_[i]->predict(x, n);

@@ -1,7 +1,7 @@
 #include "feature_set.h"
 
-// todo: memory leak possible
-void load_feature_set(feature_set& fs, const char* file_name) {
+// the last column is label
+void load_feature_set(feature_set& fs, const char* file_name, bool classification) {
 	std::ifstream f(file_name);
 	std::string line;
 	// read header
@@ -16,22 +16,40 @@ void load_feature_set(feature_set& fs, const char* file_name) {
 	}
 	// read values
 	feature_data data;
-	while (std::getline(f, line)) {
-		data.push_back(new double[n]);
-		first = 0, last = 0;
-		size_t i = 0;
-		while (i < n) {
-			last = line.find('\t', first);
-			double val = strtod(line.c_str() + first, nullptr);
-			data.back()[i++] = val;
-			if (last == std::string::npos)
-				break;
-			first = last + 1;
+	try {
+		while (std::getline(f, line)) {
+			data.push_back(new double[n]);
+			first = 0, last = 0;
+			size_t i = 0;
+			while (i < n) {
+				last = line.find('\t', first);
+				double val = strtod(line.c_str() + first, nullptr);
+				if (i == (n - 1) && classification) {
+					if (val == 0.0)
+						val = -1.0;
+					else if (val != 1.0)
+						throw std::exception("unexpected label value");
+				}
+				data.back()[i++] = val;
+				if (last == std::string::npos)
+					break;
+				first = last + 1;
+			}
+			if (i != n)
+				throw std::exception("invalid number of values");
 		}
-		if (i != n)
-			throw std::exception("invalid number of values");
+	} catch (const std::exception& e) {
+		delete_data(data);
 	}
 	fs.initialize(data, n);
+}
+
+void load_feature_set(feature_set& fs, const char* file_name) {
+	load_feature_set(fs, file_name, false);
+}
+
+void load_feature_set_for_classification(feature_set& fs, const char* file_name) {
+	load_feature_set(fs, file_name, true);
 }
 
 void print_data(std::ostream& os, const feature_data& data, size_t n) {

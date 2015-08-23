@@ -13,3 +13,11 @@ public:
 // huber_loss_function 
 // two_class_logistic_regression
 // multi_class_logistic_regression
+
+class adaptive_boosting {
+public:
+	adaptive_boosting() {}
+	double gradient(double label, double prediction) {
+		return 0.0;
+	}
+};
