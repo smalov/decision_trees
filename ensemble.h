@@ -24,28 +24,59 @@ public:
     void deserialize(const char*) {}
     //void add_tree(const tree_ptr& tree) {}
 	void learn(const feature_set& fs, std::ostream* logger = NULL) {
-        training_set ts(fs);
+		training_set ts(fs);
 		size_t n = ts.feature_count();
 		boosting_type boosting;
 
-        double F0 = mean(ts.begin(), ts.end(), n); // mean value for all labels
-        for (size_t m = 0; m < iteration_count_; ++m) {
-            for (size_t i = 0; i < ts.size(); ++i) {
-                double label = ts.y(i);
+		double F0 = boosting.initial_value(ts);
+		for (size_t m = 0; m < iteration_count_; ++m) {
+			for (size_t i = 0; i < ts.size(); ++i) {
+				double label = ts.y(i);
 				double prediction = (m == 0 ? F0 : predict(ts.x(i), n));
-				double gradient = boosting.gradient(label, prediction); 
-				ts.set_gradient(i, gradient); 
-            }
+				double gradient = boosting.gradient(label, prediction);
+				ts.set_gradient(i, gradient);
+			}
 			if (logger)
 				ts.print(*logger);
 			tree_ptr t(new tree_type());
 			t->learn(ts, ts.gradient_index(), logger);
 			if (logger)
 				t->print(*logger);
-            trees_.push_back(t);
-        }
-    }
-    // x - features
+			trees_.push_back(t);
+		}
+	}
+	void learn_classifier(const feature_set& fs, std::ostream* logger = NULL) {
+		training_set ts(fs);
+		size_t n = ts.feature_count();
+		boosting_type boosting;
+
+		double w0 = boosting.initial_value(ts);
+		for (size_t i = 0; i < ts.size(); ++i)
+			ts.set_weight(i, w0);
+		for (size_t m = 0; m < iteration_count_; ++m) {
+			//for (size_t i = 0; i < ts.size(); ++i) {
+			//	double label = ts.y(i);
+			//	double prediction = (m == 0 ? F0 : predict(ts.x(i), n));
+			//	double gradient = boosting.gradient(label, prediction);
+			//	ts.set_gradient(i, gradient);
+			//}
+			//if (logger) ts.print(*logger);
+			tree_ptr t(new tree_type());
+			t->learn(ts, ts.weight_index(), ts.label_index(), logger);
+			if (logger) t->print(*logger);
+			trees_.push_back(t);
+			double total_weight = 0.0;
+			for (size_t i = 0; i < ts.size(); ++i) {
+				double w = ts.w(i) * exp(-ts.y(i) * t->predict(ts.x(i), n));
+				ts.set_weight(i, w);
+				total_weight += w;
+			}
+			for (size_t i = 0; i < ts.size(); ++i)
+				ts.set_weight(i, ts.w(i) / total_weight);
+			if (logger) ts.print(*logger);
+		}
+	}
+	// x - features
     // n - feature count
     double predict(const double* x, size_t n) const {
         double Fx = 0.0;

@@ -3,7 +3,10 @@
 class gradient_boosting {
 public:
 	gradient_boosting() {}
-	double gradient(double label, double prediction) {
+	double initial_value(training_set& ts) const {
+		return mean(ts.begin(), ts.end(), ts.label_index()); // mean value for all labels
+	}
+	double gradient(double label, double prediction) const {
 		return label - prediction;
 	}
 };
@@ -17,7 +20,10 @@ public:
 class adaptive_boosting {
 public:
 	adaptive_boosting() {}
-	double gradient(double label, double prediction) {
+	double initial_value(training_set& ts) const {
+		return 1.0 / ts.size();
+	}
+	double gradient(double label, double weight) {
 		return 0.0;
 	}
 };

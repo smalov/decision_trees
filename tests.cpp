@@ -23,7 +23,7 @@ void test_learning_of_classification_tree(std::ostream& os) {
 	fs.print(os);
 
 	ensemble<classification_tree, adaptive_boosting> e(5);
-	e.learn(fs, &os);
+	e.learn_classifier(fs, &os);
 	e.print(os);
 
 	//training_set ts(fs);

@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	std::ostream& os = std::cout;
-	test_learning_of_classification_tree(os);
+	//test_learning_of_classification_tree(os);
 	test_learning_of_regression_tree(os);
 	test_learning_of_stump_ensemble(os);
 

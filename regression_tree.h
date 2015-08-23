@@ -55,7 +55,7 @@ private:
 		//if (i2 - i1 < min_docs_in_leaf) create leaf node
 
 		size_t i = 0, j = 0;
-		if (!split(ts, i1, i2, l, i, j)) {
+		if (!split(ts, i1, i2, l, i, j, squared_error())) {
 			// create leaf node
 			node n;
 			n.val_ = mean(ts.begin() + i1, ts.begin() + i2, l);

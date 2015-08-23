@@ -4,8 +4,9 @@
 #include "training_set.h"
 #include "math.h"
 
-inline bool split(training_set& ts, size_t i1, size_t i2, size_t l, size_t& i, size_t& j) {
-	const double e_max = squared_error(ts.begin() + i1, ts.begin() + i2, l);
+template <typename F>
+inline bool split(training_set& ts, size_t i1, size_t i2, size_t l, size_t& i, size_t& j, const F& f) {
+	const double e_max = f(ts.begin() + i1, ts.begin() + i2, l);
 	double e_min = e_max;// DBL_MAX;
 	for (size_t k = 0; k < ts.feature_count(); ++k) {
 		ts.sort(i1, i2, k);
@@ -17,7 +18,7 @@ inline bool split(training_set& ts, size_t i1, size_t i2, size_t l, size_t& i, s
 		while (true) {
 			while (it != last && (*it)[k] == prev)
 				++it; // skip equal values
-			double e = squared_error(first, it, l) + squared_error(it, last, l);
+			double e = f(first, it, l) + f(it, last, l);
 			// note: mean_squared_error() does not work here
 			if (e_min > e) {
 				e_min = e;
@@ -36,8 +37,9 @@ inline bool split(training_set& ts, size_t i1, size_t i2, size_t l, size_t& i, s
 // i - index of feature vector
 // j - index of feature
 // returns pair of index of feature and index of sample
-inline bool split(training_set& ts, size_t l, size_t& i, size_t& j) {
-	return split(ts, 0, ts.size(), l, i, j);
+template <typename F>
+inline bool split(training_set& ts, size_t l, size_t& i, size_t& j, const F& f) {
+	return split(ts, 0, ts.size(), l, i, j, f);
 }
 
 // training set must be sorted by j-th feature
