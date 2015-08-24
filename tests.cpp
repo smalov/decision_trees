@@ -19,7 +19,7 @@ void run_tests(std::ostream& os) {
 
 void test_learning_of_classification_tree(std::ostream& os) {
 	feature_set fs;
-	load_feature_set_for_classification(fs, "training_set.txt");
+	load_feature_set_for_classification(fs, "training_set-2.txt");
 	fs.print(os);
 
 	ensemble<classification_tree, adaptive_boosting> e(4); // 

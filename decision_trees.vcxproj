@@ -95,6 +95,7 @@
     <ClInclude Include="regression_tree.h" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="training_set-2.txt" />
     <Text Include="training_set.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
