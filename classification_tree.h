@@ -12,7 +12,7 @@ public:
 	// l - index of column with labels
 	void learn(training_set& ts, size_t w, size_t l, std::ostream* logger = NULL) {
 		size_t i = 0, j = 0;
-		if (!split(ts, l, i, j, binary_entropy()))
+		if (!split<binary_entropy>(ts, l, i, j))
 			throw std::exception(); // return false;
 
 		ts.sort(j);
@@ -25,14 +25,13 @@ public:
 		double gt = leaf_value(it, ts.end(), l);
 
 		double error = 0.0;
-		size_t n = ts.feature_count();
 		for (size_t i = 0; i < ts.size(); ++i) {
 			const double* x = ts.x(i);
 			double wi = x[w]; // weight
 			double yi = x[l]; // label
 			double hi = x[j] <= val ? lte : gt;
-			double e = wi * exp(-yi * hi);
-			error += e;
+			if (yi != hi)
+				error += wi;
 		}
 
 		feature_ = j;
@@ -52,6 +51,7 @@ public:
 			<< "\n\tval: " << val_
 			<< "\n\tlte: " << lte_
 			<< "\n\tgt: " << gt_
+			<< "\n\talpha:" << alpha_
 			<< std::endl;
 	}
 private:

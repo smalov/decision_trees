@@ -56,7 +56,7 @@ void print_data(std::ostream& os, const feature_data& data, size_t n) {
 	std::cout << "feature vectors:\n";
 	for (size_t i = 0; i < data.size(); ++i) {
 		const double* x = data[i];
-		os << (i + 1);
+		os << (i + 1) << ":";
 		for (size_t j = 0; j <= n; ++j)
 			os << "\t" << std::setprecision(3) << x[j];
 		os << "\n";

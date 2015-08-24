@@ -22,9 +22,21 @@ void test_learning_of_classification_tree(std::ostream& os) {
 	load_feature_set_for_classification(fs, "training_set.txt");
 	fs.print(os);
 
-	ensemble<classification_tree, adaptive_boosting> e(5);
+	ensemble<classification_tree, adaptive_boosting> e(4); // 
 	e.learn_classifier(fs, &os);
 	e.print(os);
+
+	double y = 0.0;
+	double x1[2] = { 1, 8 };
+	y = e.predict(x1, 2);
+	double x2[2] = { 3, 3 };
+	y = e.predict(x2, 2);
+	double x3[2] = { 4, 1 };
+	y = e.predict(x3, 2);
+	double x4[2] = { 6, 5 };
+	y = e.predict(x4, 2);
+	double x5[2] = { 0, 2 };
+	y = e.predict(x5, 2);
 
 	//training_set ts(fs);
 	//classification_tree t;

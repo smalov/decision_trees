@@ -21,7 +21,7 @@ public:
 	// l - label index
 	void learn(training_set& ts, size_t l, std::ostream* logger = NULL) {
 		size_t i = 0, j = 0; 
-		if (!split(ts, l, i, j, squared_error()))
+		if (!split<squared_error>(ts, l, i, j))
 			throw std::exception(); // return false;
 
 		ts.sort(j);

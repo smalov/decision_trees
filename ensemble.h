@@ -53,6 +53,7 @@ public:
 		double w0 = boosting.initial_value(ts);
 		for (size_t i = 0; i < ts.size(); ++i)
 			ts.set_weight(i, w0);
+		if (logger) ts.print(*logger);
 		for (size_t m = 0; m < iteration_count_; ++m) {
 			//for (size_t i = 0; i < ts.size(); ++i) {
 			//	double label = ts.y(i);

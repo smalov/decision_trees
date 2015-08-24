@@ -5,9 +5,10 @@
 #include "math.h"
 
 template <typename F>
-inline bool split(training_set& ts, size_t i1, size_t i2, size_t l, size_t& i, size_t& j, const F& f) {
-	const double e_max = f(ts.begin() + i1, ts.begin() + i2, l);
-	double e_min = e_max;// DBL_MAX;
+inline bool split(training_set& ts, size_t i1, size_t i2, size_t l, size_t& i, size_t& j) {
+	const size_t w = ts.weight_index();
+	const F f(ts.begin() + i1, ts.begin() + i2, l, w);
+	double gain = 0.0;
 	for (size_t k = 0; k < ts.feature_count(); ++k) {
 		ts.sort(i1, i2, k);
 		const double** const first = ts.begin() + i1;
@@ -18,11 +19,10 @@ inline bool split(training_set& ts, size_t i1, size_t i2, size_t l, size_t& i, s
 		while (true) {
 			while (it != last && (*it)[k] == prev)
 				++it; // skip equal values
-			double e = f(first, it, l) + f(it, last, l);
-			// note: mean_squared_error() does not work here
-			if (e_min > e) {
-				e_min = e;
-				i = it - ts.begin();// first;
+			double g = f.gain(first, it, last, l, w);
+			if (gain < g) {
+				gain = g;
+				i = it - ts.begin();
 				j = k;
 			}
 			if (it == last)
@@ -31,15 +31,15 @@ inline bool split(training_set& ts, size_t i1, size_t i2, size_t l, size_t& i, s
 			++it;
 		}
 	}
-	return e_min < e_max;
+	return gain > 0.0;
 }
 
 // i - index of feature vector
 // j - index of feature
 // returns pair of index of feature and index of sample
 template <typename F>
-inline bool split(training_set& ts, size_t l, size_t& i, size_t& j, const F& f) {
-	return split(ts, 0, ts.size(), l, i, j, f);
+inline bool split(training_set& ts, size_t l, size_t& i, size_t& j) {
+	return split<F>(ts, 0, ts.size(), l, i, j);
 }
 
 // training set must be sorted by j-th feature
@@ -47,13 +47,13 @@ inline void print_split(std::ostream& os, const training_set& ts, size_t i1, siz
 	os << "SPLIT(x" << j << ")\n";
 	for (size_t f = 0; f < ts.feature_count(); ++f)
 		os << "x" << f << "\t";
-	os << "y\tgrad\n----------------------------\n";
+	os << "y\tgrad\tweight\n--------------------------------------\n";
 	for (size_t k = i1; k < i2; ++k) {
 		if (k == i)
-			os << "----------------------------\n";
+			os << "--------------------------------------\n";
 		for (size_t f = 0; f < ts.feature_count(); ++f)
 			os << ts.x(k)[f] << "\t";
-		os << ts.y(k) << "\t" << ts.gradient(k) << "\n";
+		os << ts.label(k) << "\t" << ts.gradient(k) << "\t" << ts.weight(k) << "\n";
 	}
 	os << "END OF SPLIT" << std::endl;
 }
