@@ -12,8 +12,8 @@ bool equal(double d1, double d2) {
 }
 
 void run_tests(std::ostream& os) {
-	//test_learning_of_regression_tree(os);
-	//test_learning_of_stump_ensemble(os);
+	test_learning_of_regression_tree(os);
+	test_learning_of_stump_ensemble(os);
 	test_learning_of_classification_tree(os);
 }
 
@@ -22,25 +22,46 @@ void test_learning_of_classification_tree(std::ostream& os) {
 	load_feature_set_for_classification(fs, "training_set-2.txt");
 	fs.print(os);
 
-	ensemble<classification_tree, adaptive_boosting> e(4); // 
+	ensemble<classification_tree, adaptive_boosting> e(3); 
 	e.learn_classifier(fs, &os);
 	e.print(os);
 
 	double y = 0.0;
 	double x1[2] = { 1, 8 };
-	y = e.predict(x1, 2);
-	double x2[2] = { 3, 3 };
-	y = e.predict(x2, 2);
-	double x3[2] = { 4, 1 };
-	y = e.predict(x3, 2);
-	double x4[2] = { 6, 5 };
-	y = e.predict(x4, 2);
-	double x5[2] = { 0, 2 };
-	y = e.predict(x5, 2);
+	y = e.predict_class(x1, 2);
+	assert(y == 1);
 
-	//training_set ts(fs);
-	//classification_tree t;
-	//t.learn(ts, ts.label_index(), &os);
+	double x2[2] = { 3, 3 };
+	y = e.predict_class(x2, 2);
+	assert(y == -1);
+
+	double x3[2] = { 4, 1 };
+	y = e.predict_class(x3, 2);
+	assert(y == -1);
+
+	double x4[2] = { 6, 5 };
+	y = e.predict_class(x4, 2);
+	assert(y == -1);
+
+	double x5[2] = { 0, 2 };
+	y = e.predict_class(x5, 2);
+	assert(y == 1);
+
+	double x6[2] = { 6, 8 };
+	y = e.predict_class(x6, 2);
+	assert(y == -1);
+
+	double x7[2] = { 8, 10 };
+	y = e.predict_class(x7, 2);
+	assert(y == 1);
+
+	double x8[2] = { 11, 1 };
+	y = e.predict_class(x8, 2);
+	assert(y == -1);
+
+	double x9[2] = { 4, 12 };
+	y = e.predict_class(x9, 2);
+	assert(y == 1);
 }
 
 void test_learning_of_regression_tree(std::ostream& os) {

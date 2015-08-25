@@ -20,6 +20,8 @@ inline bool split(training_set& ts, size_t i1, size_t i2, size_t l, size_t& i, s
 			while (it != last && (*it)[k] == prev)
 				++it; // skip equal values
 			double g = f.gain(first, it, last, l, w);
+			//std::cout << "gain=" << std::setprecision(3) << g << " k=" << k
+			//	<< " split=" << std::setprecision(3) << (it == last ? 0.0 : (*it)[k]) << std::endl;
 			if (gain < g) {
 				gain = g;
 				i = it - ts.begin();

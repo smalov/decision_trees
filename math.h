@@ -59,11 +59,12 @@ class binary_entropy {
 	double val_;
 public:
 	binary_entropy(const double** first, const double** last, size_t label_index, size_t weight_index)
-		: n_(last - first), val_(impl(first, last, label_index, weight_index)) {}
+		: n_(last - first), val_(impl(first, last, label_index, weight_index))
+	{}
 	// information gain
 	double gain(const double** first, const double** split, const double** last, size_t label_index, size_t weight_index) const {
-		double e1 = impl(first, split, label_index, weight_index) *(split - first) / n_;
-		double e2 = impl(split, last, label_index, weight_index) *(last - split) / n_;
+		double e1 = impl(first, split, label_index, weight_index) * (split - first) / n_;
+		double e2 = impl(split, last, label_index, weight_index) * (last - split) / n_;
 		return val_ - e1 - e2;
 	}
 	double value() const { return val_; }
@@ -83,6 +84,9 @@ private:
 			else
 				throw std::exception("unexpected label value");
 		}
-		return -p1 * log2(p1) - p2 * log2(p2);
+		double e = 0.0;
+		if (p1 > 0.0) e -= p1 * log2(p1);
+		if (p2 > 0.0) e -= p2 * log2(p2);
+		return e;
 	}
 };

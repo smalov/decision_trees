@@ -79,13 +79,19 @@ public:
 	}
 	// x - features
     // n - feature count
-    double predict(const double* x, size_t n) const {
-        double Fx = 0.0;
+	double predict(const double* x, size_t n) const {
+		double Fx = 0.0;
 		for (size_t i = 0; i < trees_.size(); ++i)
 			Fx += trees_[i]->predict(x, n);
-        return Fx;
-    }
-    void print(std::ostream& os) const {
+		return Fx;
+	}
+	double predict_class(const double* x, size_t n) const {
+		double Fx = 0.0;
+		for (size_t i = 0; i < trees_.size(); ++i)
+			Fx += trees_[i]->predict(x, n);
+		return Fx > 0.0 ? 1.0 : -1.0;
+	}
+	void print(std::ostream& os) const {
         os << "ENSEBMLE:\n";
         for (size_t i = 0; i < trees_.size(); ++i)
             trees_[i]->print(os);
